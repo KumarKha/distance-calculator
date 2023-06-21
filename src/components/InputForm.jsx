@@ -5,6 +5,8 @@ const InputForm = () => {
 
   const [distance, setDistance] = useState(null);
 
+  const [inputType, setInputType] = useState('');
+
   const { inputA, inputB } = location;
 
   class Coordinate {
@@ -32,6 +34,10 @@ const InputForm = () => {
     let pointA = inputToCoordinate(location.inputA);
     let pointB = inputToCoordinate(location.inputB);
     calDistance(pointA, pointB);
+  };
+
+  const handleType = (e) => {
+    console.log(e.target.value);
   };
   /**
    *
@@ -73,6 +79,10 @@ const InputForm = () => {
   return (
     <div>
       <form onSubmit={handleSubmit}>
+        <div onChange={handleType}>
+          <input type='radio' value='corrd' name='inputType' /> Coor
+          <input type='radio' value='address' name='inputType' /> Address
+        </div>
         <div>
           <label>Enter Cords for Point A</label>
           <br />
