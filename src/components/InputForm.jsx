@@ -3,6 +3,8 @@ import { useState } from 'react';
 const InputForm = () => {
   const [location, setLocation] = useState('');
 
+  const [distance, setDistance] = useState(null);
+
   const { inputA, inputB } = location;
 
   class Coordinate {
@@ -28,7 +30,8 @@ const InputForm = () => {
     e.preventDefault();
 
     let pointA = inputToCoordinate(location.inputA);
-    console.log(pointA);
+    let pointB = inputToCoordinate(location.inputB);
+    calDistance(pointA, pointB);
   };
   /**
    *
@@ -64,12 +67,12 @@ const InputForm = () => {
 
     const distance = c * radius;
 
-    return distance.toFixed(2);
+    setDistance(distance.toFixed(2));
   };
 
   return (
     <div>
-      <form id='form' onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}>
         <div>
           <label>Enter Cords for Point A</label>
           <br />
@@ -86,6 +89,10 @@ const InputForm = () => {
           <button type='submit'>Calculate</button>
         </div>
       </form>
+
+      {!isNaN(distance) && (
+        <p>The distance between Point A and Point B is {distance} km</p>
+      )}
     </div>
   );
 };
