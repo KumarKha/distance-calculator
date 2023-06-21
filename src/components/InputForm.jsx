@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 import { useState } from 'react';
 
 const InputForm = () => {
@@ -5,9 +7,13 @@ const InputForm = () => {
 
   const [distance, setDistance] = useState(null);
 
-  const [inputType, setInputType] = useState('');
+  const [inputType, setInputType] = useState('coordinate');
+
+  const [test, setTest] = useState('');
 
   const { inputA, inputB } = location;
+
+  // Input Procecessing
 
   class Coordinate {
     constructor(lat, lng) {
@@ -16,11 +22,32 @@ const InputForm = () => {
     }
   }
 
+  // Process User entered Coordinates
   const inputToCoordinate = (input) => {
     let temp = input.split(',');
     if (temp.length === 2) {
       return new Coordinate(temp[0], temp[1]);
     }
+  };
+
+  // Process User entered Address
+
+  const addressToCoordinate = (location) => {
+    axios
+      .get('https://maps.googleapis.com/maps/api/geocode/json', {
+        params: {
+          address: location,
+          key: import.meta.env.VITE_GOOGLE_API_KEY,
+        },
+      })
+      .then((res) => {
+        const coordinateFromGoogle = res.data.results[0].geometry.location;
+
+        return coordinateFromGoogle;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const handleChange = (e) => {
@@ -30,14 +57,19 @@ const InputForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    let pointA = inputToCoordinate(location.inputA);
-    let pointB = inputToCoordinate(location.inputB);
-    calDistance(pointA, pointB);
+    let pointA, pointB;
+    if (inputType === 'coordinate') {
+      pointA = inputToCoordinate(location.inputA);
+      pointB = inputToCoordinate(location.inputB);
+    } else {
+      pointA = location.inputA;
+      console.log(pointA);
+    }
+    // calDistance(pointA, pointB);
   };
 
-  const handleType = (e) => {
-    console.log(e.target.value);
+  const handleInputType = (e) => {
+    setInputType(e.target.value);
   };
   /**
    *
@@ -79,8 +111,14 @@ const InputForm = () => {
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        <div onChange={handleType}>
-          <input type='radio' value='corrd' name='inputType' /> Coor
+        <div onChange={handleInputType}>
+          <input
+            type='radio'
+            value='coordinate'
+            name='inputType'
+            defaultChecked
+          />
+          Coor
           <input type='radio' value='address' name='inputType' /> Address
         </div>
         <div>
@@ -99,10 +137,11 @@ const InputForm = () => {
           <button type='submit'>Calculate</button>
         </div>
       </form>
-
-      {!isNaN(distance) && (
-        <p>The distance between Point A and Point B is {distance} km</p>
-      )}
+      <div>
+        {distance != null && (
+          <p>The distance between Point A and Point B is {distance} km</p>
+        )}
+      </div>
     </div>
   );
 };
