@@ -1,17 +1,14 @@
-import axios from 'axios';
-
 import { useState } from 'react';
+
+import { getCoordinatesFromAddress } from '../api/Google/Geocoding';
 
 const InputForm = () => {
   const [location, setLocation] = useState('');
+  const { inputA, inputB } = location;
 
   const [distance, setDistance] = useState(null);
 
   const [inputType, setInputType] = useState('coordinate');
-
-  const [test, setTest] = useState('');
-
-  const { inputA, inputB } = location;
 
   // Input Procecessing
 
@@ -32,40 +29,47 @@ const InputForm = () => {
 
   // Process User entered Address
 
-  const addressToCoordinate = (location) => {
-    axios
-      .get('https://maps.googleapis.com/maps/api/geocode/json', {
-        params: {
-          address: location,
-          key: import.meta.env.VITE_GOOGLE_API_KEY,
-        },
-      })
-      .then((res) => {
-        const coordinateFromGoogle = res.data.results[0].geometry.location;
+  // To be moved into separate Api Folder
 
-        return coordinateFromGoogle;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+  // const addressToCoordinate = (location) => {
+  //   axios
+  // .get('https://maps.googleapis.com/maps/api/geocode/json', {
+  //   params: {
+  //     address: location,
+  //     key: import.meta.env.VITE_GOOGLE_API_KEY,
+  //   },
+  // })
+  //     .then((res) => {
+  //       const coordinateFromGoogle = res.data.results[0].geometry.location;
+
+  //       console.log('Here ', coordinateFromGoogle, location);
+
+  //       SetTempCoordinates(coordinateFromGoogle);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setLocation((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let pointA, pointB;
     if (inputType === 'coordinate') {
       pointA = inputToCoordinate(location.inputA);
       pointB = inputToCoordinate(location.inputB);
     } else {
-      pointA = location.inputA;
-      console.log(pointA);
+      //Google Geocoding
+      pointA = await getCoordinatesFromAddress(location.inputA);
+      pointB = await getCoordinatesFromAddress(location.inputB);
+
+      console.log(pointA, pointB);
     }
-    // calDistance(pointA, pointB);
+    calDistance(pointA, pointB);
   };
 
   const handleInputType = (e) => {
