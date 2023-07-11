@@ -1,5 +1,3 @@
-<picture>
- <source media="(prefers-color-scheme: dark)" srcset="YOUR-DARKMODE-IMAGE">
- <source media="(prefers-color-scheme: light)" srcset="YOUR-LIGHTMODE-IMAGE">
- <img alt="YOUR-ALT-TEXT" src="YOUR-DEFAULT-IMAGE">
-</picture>
+Calculator to find air distance use haversine formula from user enter latitude and longitude coordinates.
+
+Built using Vite+ReactJs Framework, Google geocoding api to convert addresses to coordinates, Axios to handle HTTP request
